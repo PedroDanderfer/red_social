@@ -47,6 +47,15 @@ class AuthToken
         // Buscamos si el usuario existe.
 //        $usuario = new Usuario;
 //        $usuario = $usuario->getByEmail($email);
+        if($this->estaAutenticado()) {
+
+            echo json_encode([
+                'success' => false,
+                'errores' => 'Ya estas logeado.'
+            ]);
+            die();
+        }
+
         $user = (new User)->getByEmail($email);
 
         // Verificamos si el usuario existe.
@@ -157,7 +166,7 @@ class AuthToken
                 // Los valores de signer y signing-Key deberían ser los mismos que usamos al momento de crear
                 // el token.
                 new SignedWith($config->signer(), $config->signingKey()),
-                new IssuedBy('https://davinci.edu.ar')
+                new IssuedBy(self::JWT_ISSUER)
             ];
 
             // Hacemos la verificación.
@@ -184,7 +193,9 @@ class AuthToken
      */
     public function getUsuario()
     {
+
         if(!$this->estaAutenticado()) {
+
             return null;
         }
 
@@ -193,16 +204,6 @@ class AuthToken
         // Abreviado...
 //        return (new Usuario)->getByPk($_SESSION['id']);
 
-        $user = (new User)->getByPk($this->id);
-        
-        $data = [
-            "id" => $user->getId(),
-            "user" => $user->getUser(),
-            "name" => $user->getName(),
-            "surname" => $user->getSurname(),
-            "email" => $user->getEmail(),
-            "created_at" => $user->getCreatedAt(),
-        ];
-        return $data;
+        return (new User)->getByPk($this->id);
     }
 }

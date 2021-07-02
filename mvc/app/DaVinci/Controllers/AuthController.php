@@ -40,14 +40,7 @@ class AuthController
 
         echo json_encode([
             'success' => true,
-            'errores' => '',
-            'data' => [
-                'id' => $user->getId(),
-                'user' => $user->getUser(),
-                'name' => $user->getName(),
-                'surname' => $user->getSurname(),
-                'email' => $user->getEmail(),
-            ]
+            'user' => $user
         ]);
         die();
     }
@@ -57,25 +50,36 @@ class AuthController
         (new AuthToken())->logout();
         echo json_encode([
             'success' => true,
-            'errores' =>''
+            'errores' =>'Sesión cerrada con éxito.'
         ]);
         die();
     }
 
-    public function check(){
+    public function getAuth(){
 
-        $check = new AuthToken();
+        $auth = new AuthToken();
 
-        if(is_null($check->getUsuario())){
-
-            echo 'null';
-
+        if(is_null($auth->getUsuario())){
+            echo json_encode([
+                'success' => false,
+                'errores' =>'Debes iniciar sesion'
+            ]);
+            die();
         }else{
-
-            print_r($check->getUsuario());
-
+            echo json_encode([
+                'success' => true,
+                'user' => [
+                    "id" => $auth->getUsuario()->getId(),
+                    "user" => $auth->getUsuario()->getUser(),
+                    "name" => $auth->getUsuario()->getName(),
+                    "surname" => $auth->getUsuario()->getSurname(),
+                    "email" => $auth->getUsuario()->getEmail(),
+                    "biography" => $auth->getUsuario()->getBiography(),
+                    "create_at" => $auth->getUsuario()->getCreatedAt(),
+                ]
+            ]);
+            die();
         }
-        die();
 
     }
 }

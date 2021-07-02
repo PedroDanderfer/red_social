@@ -1,6 +1,10 @@
 <?php
 //session_start();
 
+header('Access-Control-Allow-Origin: http://localhost:8080');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Credentials: true');
+
 // Antes que nada, requerimos el autoload.
 require __DIR__ . '/../autoload.php';
 

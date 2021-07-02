@@ -17,10 +17,11 @@ class User extends Modelo implements JsonSerializable
     protected $surname = null;
     protected $email = null;
     protected $password = null;
+    protected $biography = null;
     protected $created_at = null;
 
     /** @var array Lista de los atributos que permitidos cargar en nuestra clase. */
-    protected $atributosPermitidos = ['id', 'user', 'name', 'surname', 'email', 'password', 'created_at'];
+    protected $atributosPermitidos = ['id', 'user', 'name', 'surname', 'email', 'password', 'biography', 'created_at'];
 
     public function jsonSerialize()
     {
@@ -31,6 +32,7 @@ class User extends Modelo implements JsonSerializable
             'surname' => $this->getSurname(),
             'email' => $this->getEmail(),
             'password' => $this->getPassword(),
+            'biography' => $this->getBiography(),
             'created_at' => $this->getCreatedAt(),
         ];
     }
@@ -62,6 +64,7 @@ class User extends Modelo implements JsonSerializable
             $user->surname = $row['surname'];
             $user->email = $row['email'];
             $user->password = $row['password'];
+            $user->biography = $row['biography'];
             $user->created_at = $row['created_at'];
 
             return $user;
@@ -69,7 +72,31 @@ class User extends Modelo implements JsonSerializable
         return null;
     }
 
+    public function buscarValorUnico($valor, $campo)
+    {
+        $db = DBConnection::getConnection();
 
+        $query = "SELECT * FROM users WHERE ". $campo . "=?";
+
+        $stmt = $db->prepare($query);
+
+        $stmt->execute([$valor]);
+
+        $dato = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($dato)
+            throw new Exception("El " . $campo . " con el valor " . $valor . " ya esta en uso");
+
+        return true;
+    }
+
+    public function editPsswd(string $password){
+        echo 'editPsswd';
+    }
+
+    public function editUser(string $password){
+        echo 'editUser';
+    }
 
     public function registrar(array $data)
     {
@@ -212,6 +239,22 @@ class User extends Modelo implements JsonSerializable
     public function setPassword($password)
     {
         $this->password = $password;
+    }
+
+     /**
+     * @return mixed
+     */
+    public function getBiography()
+    {
+        return $this->biography;
+    }
+
+    /**
+     * @param mixed $biography
+     */
+    public function setBiography($biography)
+    {
+        $this->biography = $biography;
     }
 
       /**

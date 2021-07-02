@@ -1,6 +1,8 @@
 <?php
 namespace DaVinci\Validation;
 
+use DaVinci\Models\User;
+
 /*
  * Implementación realizada en clase de nuestra clase de Validación :)
  *
@@ -266,6 +268,13 @@ class Validator
         }
     }
 
+    protected function _max($campo, $cantidad)
+    {
+        if(strlen($this->campos[$campo]) > $cantidad) {
+            $this->registrarError($campo, 'El campo ' . $this->camposNombre($campo) . ' no puede ser mayor a ' . $cantidad . ' caracteres');
+        }
+    }
+
     /**
      * Valida que el valor del campo sea un email.
      *
@@ -276,6 +285,21 @@ class Validator
         if (!filter_var($this->campos[$campo], FILTER_VALIDATE_EMAIL)) {
             $this->registrarError($campo, 'El campo ' . $this->camposNombre($campo) . ' no tiene un formato correcto');
         }
+    }
+
+    protected function _unique($campo, $column)
+    {       
+        $user = new User();
+
+        try {
+            
+            $user->buscarValorUnico($this->campos[$campo], $column);
+           
+        } catch (Exception $exception) {
+            $this->registrarError($campo, $exception->getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**
