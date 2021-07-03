@@ -12,6 +12,13 @@ use DaVinci\Models\Comment;
 
 class PostController
 {
+     /**
+      * 
+     * Administra la logica para la creacion de un post.
+     * 
+     * @return bool
+     */
+
     public function create(){
         
         $data = file_get_contents('php://input');
@@ -22,7 +29,7 @@ class PostController
         if(is_null($auth->getUsuario())){
             echo json_encode([
                 'success' => false,
-                'errores' => 'Necesitas estar logeado.'
+                'errors' => 'Necesitas estar logeado.'
             ]);
             die();
         }
@@ -34,7 +41,7 @@ class PostController
         if(!$validation->passes()) {
             echo json_encode([
                 'success' => false,
-                'errores' => $validation->getErrores()
+                'errors_validation' => $validation->getErrores()
             ]);
             die();
         }
@@ -45,17 +52,24 @@ class PostController
             $post->create($postData['content'], $auth->getUsuario()->getId());
             echo json_encode([
                 'success' => true,
-                'errores' => 'Posteo creado con éxito'
+                'message' => 'Posteo creado con éxito'
             ]);
             die();
         } catch(Exception $e) {
             echo json_encode([
                 'success' => false,
-                'errores' => $e->getMessage()
+                'errors' => $e->getMessage()
             ]);
             die();
         }
     }
+
+     /**
+      * 
+     * Administra la logica para la eliminacion de un posteo
+     * 
+     * @return bool
+     */
 
     public function delete(){
 
@@ -66,7 +80,7 @@ class PostController
         if(is_null($auth->getUsuario())){
             echo json_encode([
                 'success' => false,
-                'errores' => 'Necesitas estar logeado.'
+                'errors' => 'Necesitas estar logeado.'
             ]);
             die();
         }
@@ -77,18 +91,25 @@ class PostController
             $deletePost->delete($id, $auth->getUsuario()->getId());
             echo json_encode([
                 'success' => true,
-                'errores' => 'Post eliminado con éxito'
+                'message' => 'Post eliminado con éxito'
             ]);
             die();
         } catch(Exception $e) {
             echo json_encode([
                 'success' => false,
-                'errores' => $e->getMessage()
+                'errors' => $e->getMessage()
             ]);
             die();
         }
     }
 
+     /**
+      * 
+     * Administra la logica para buscar un posteo mediante su id
+     * 
+     * @return Post|bool
+     */
+    
     public function byId(){
 
         $id = Route::getUrlParameters()['id'];
@@ -107,13 +128,20 @@ class PostController
         } catch(Exception $e) {
             echo json_encode([
                 'success' => false,
-                'errores' => $e->getMessage()
+                'errors' => $e->getMessage()
             ]);
             die();
         }
 
 
     }
+
+     /**
+      * 
+     * Administra la logica para la busqueda de un post mediante su id
+     * 
+     * @return Post|bool
+     */
 
     public function byUser(){
 
@@ -131,7 +159,7 @@ class PostController
         } catch(Exception $e) {
             echo json_encode([
                 'success' => false,
-                'errores' => $e->getMessage()
+                'errors' => $e->getMessage()
             ]);
             die();
         }
@@ -152,11 +180,9 @@ class PostController
         } catch(Exception $e) {
             echo json_encode([
                 'success' => false,
-                'errores' => $e->getMessage()
+                'errors' => $e->getMessage()
             ]);
             die();
         }
     }
-
-    public function edit(){}
 }

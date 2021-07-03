@@ -40,6 +40,13 @@ class Comment extends Modelo implements JsonSerializable
         }
     }
 
+    /**
+     * Crea un comentario en la base de datos
+     * @param  String $content 
+     * @param  String $post_id 
+     * @param  String $user_id 
+     * @return bool|Exception
+     */
     public function create(string $content, string $post_id, string $user_id)
     {
         $data = [];
@@ -79,6 +86,12 @@ class Comment extends Modelo implements JsonSerializable
         }
     }
 
+    /**
+     * Elimina un comentario en la base de datos
+     * @param  String $id 
+     * @param  String $user_id 
+     * @return bool
+     */
     public function delete(string $id, string $user_id){
         
         $db = DBConnection::getConnection();
@@ -93,27 +106,46 @@ class Comment extends Modelo implements JsonSerializable
             if($row['user_id'] != $user_id){
                 echo json_encode([
                     'success' => false,
-                    'errores' => 'Solo podes eliminar publicaciones propias.'
+                    'errors' => 'Solo podes eliminar publicaciones propias.'
                 ]);
                 die();
             }
 
-            echo 'delete';
-            die();
+            $query = "DELETE FROM comments WHERE id=?";
+            $stmt = $db->prepare($query);
+            
+            if($stmt->execute([$id])){
+                echo json_encode([
+                    'success' => true,
+                    'errors' => 'Comentario eliminado con exito'
+                ]);
+                die();
+            }else{
+                echo json_encode([
+                    'success' => 'errorNotification',
+                    'errors' => 'No se pudo eliminar el comentario'
+                ]);
+                die();
+            }
+
         }
         echo json_encode([
             'success' => false,
-            'errores' => 'No existe el post id: '.$id.'.'
+            'errors' => 'No existe el post id: '.$id.'.'
         ]);
         die();
     }
 
-    public function edit(){}
+    /**
+     * Trrae los comentarios de un post
+     * @param  String $post_id 
+     * @return array
+     */
 
     public function byPost($post_id){
         $db = DBConnection::getConnection();
 
-        $query = "SELECT comments.*, users.id AS user_id, users.user as users_user, users.name AS user_name, users.surname AS user_surname FROM comments LEFT JOIN users ON users.id=comments.user_id WHERE post_id=?";
+        $query = "SELECT comments.*, users.id AS user_id, users.user as user_user, users.name AS user_name, users.surname AS user_surname FROM comments LEFT JOIN users ON users.id=comments.user_id WHERE post_id=?";
         $stmt = $db->prepare($query);
         $stmt->execute([$post_id]);
   
@@ -122,13 +154,6 @@ class Comment extends Modelo implements JsonSerializable
             array_push($salida, $row);
         }         
 
-        if(empty($salida)){
-            echo json_encode([
-                'success' => false,
-                'errores' => 'El posteo no tiene ningun comentario.'
-            ]);
-            die();
-        }
         return $salida;
     }
 

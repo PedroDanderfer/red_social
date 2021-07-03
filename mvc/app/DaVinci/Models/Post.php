@@ -38,6 +38,12 @@ class Post extends Modelo implements JsonSerializable
         }
     }
 
+    /**
+     * Crea un posteo en la base de datos
+     * @param  String $content 
+     * @param  String $user_id
+     * @return bool|Exception
+     */
     public function create(string $content, string $id)
     {
         $data = [];
@@ -76,6 +82,12 @@ class Post extends Modelo implements JsonSerializable
         }
     }
 
+    /**
+     * Trae los posteos de un usuario
+     * @param  String $user_id 
+     * @return array
+     */
+
     public function byUser($user_id)
     {
         $db = DBConnection::getConnection();
@@ -86,49 +98,60 @@ class Post extends Modelo implements JsonSerializable
         $stmt = $db->prepare($query);
         $stmt->execute([$user_id]);
   
-        $salida = [];
+        $res = [];
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
-            array_push($salida, $row);
+            array_push($res, $row);
         }         
 
-        if(empty($salida)){
+        if(empty($res)){
             echo json_encode([
                 'success' => false,
-                'errores' => 'El usuario no publico ningun posteo.'
+                'errors' => 'El usuario no publico ningun posteo.'
             ]);
             die();
         }
-        return $salida;
+        return $res;
     }
+
+    /**
+     * Trae un posteo por su id
+     * @param  String $id 
+     * @return array
+     */
 
     public function byId($id){
 
         $db = DBConnection::getConnection();
 
-        $query = "SELECT posts.*, users.id AS user_id, users.user as users_user, users.name AS user_name, users.surname AS user_surname FROM posts LEFT JOIN users ON users.id=posts.user_id WHERE posts.id = ?";
+        $query = "SELECT posts.*, users.id AS user_id, users.user as user_user, users.name AS user_name, users.surname AS user_surname FROM posts LEFT JOIN users ON users.id=posts.user_id WHERE posts.id = ?";
 
         $stmt = $db->prepare($query);
         $stmt->execute([$id]);
   
-        $salida = $stmt->fetch(PDO::FETCH_ASSOC);
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if(!$salida){
+        if(!$res){
             echo json_encode([
                 'success' => false,
-                'errores' => 'El post no existe.'
+                'errors' => 'El post no existe.'
             ]);
             die();
         }
 
         $post = new Post;
-        $post->massAssignament($salida);
+        $post->massAssignament($res);
          
 
-        return $salida;
+        return $res;
     }
 
-    
+    /**
+     * Elimina un posteo de la base de datos
+     * @param  String $id
+     * @param  String $user_id 
+     * @return bool|Exception
+     */
     public function delete(string $id, string $user_id){
         
         $db = DBConnection::getConnection();
@@ -143,43 +166,61 @@ class Post extends Modelo implements JsonSerializable
             if($row['user_id'] != $user_id){
                 echo json_encode([
                     'success' => false,
-                    'errores' => 'Solo podes eliminar publicaciones propias.'
+                    'errors' => 'Solo podes eliminar publicaciones propias.'
                 ]);
                 die();
             }
 
-            echo 'delete';
-            die();
+            $query = "DELETE FROM posts WHERE id=?";
+            $stmt = $db->prepare($query);
+            
+            if($stmt->execute([$id])){
+                echo json_encode([
+                    'success' => true,
+                    'errors' => 'Posteo eliminado con exito'
+                ]);
+                die();
+            }else{
+                echo json_encode([
+                    'success' => 'errorNotification',
+                    'errors' => 'No se pudo eliminar el posteo'
+                ]);
+                die();
+            }
+
         }
         echo json_encode([
             'success' => false,
-            'errores' => 'No existe el post id: '.$id.'.'
+            'errors' => 'No existe el post id: '.$id.'.'
         ]);
         die();
     }
 
-    public function edit(){}
+    /**
+     * Trae todos los posteos de la base de datos
+     * @return  array
+     */
     
     public function getAll(){
         $db = DBConnection::getConnection();
 
-        $query = "SELECT posts.*, users.id AS user_id, users.user as users_user, users.name AS user_name, users.surname AS user_surname FROM posts LEFT JOIN users ON users.id = posts.user_id";
+        $query = "SELECT posts.*, users.id AS user_id, users.user as user_user, users.name AS user_name, users.surname AS user_surname FROM posts LEFT JOIN users ON users.id = posts.user_id";
         $stmt = $db->prepare($query);
         $stmt->execute();
   
-        $salida = [];
+        $res = [];
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            array_push($salida, $row);
+            array_push($res, $row);
         }         
 
-        if(empty($salida)){
+        if(empty($res)){
             echo json_encode([
                 'success' => false,
-                'errores' => 'No existen posteos por el momento.'
+                'errors' => 'No existen posteos por el momento.'
             ]);
             die();
         }
-        return $salida;
+        return $res;
     }
 
     /**

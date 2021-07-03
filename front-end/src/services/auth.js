@@ -1,11 +1,11 @@
 import { URL } from '@/constants';
 
-let userSession ={
+let userSession = {
     id: null,
     user: null,
     name: null,
     surname: null,
-    email: null, 
+    email: null
 }
 
 const authService = {
@@ -53,13 +53,13 @@ const authService = {
         .then(res => {
 
             if(res.success){
+
                 userSession.id = null;
                 userSession.user = null;
                 userSession.name = null;
                 userSession.surname = null;
                 userSession.email = null;
-
-                return {succes:true}
+                return {success:true}
             }else{
                 return  {
                     success: false,

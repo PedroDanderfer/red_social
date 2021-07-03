@@ -12,6 +12,13 @@ use DaVinci\Models\Comment;
 
 class CommentController
 {
+     /**
+      * 
+     * Administra la logica para la creacion del comentario
+     * 
+     * @return bool
+     */
+
     public function create(){
         
         $data = file_get_contents('php://input');
@@ -22,7 +29,7 @@ class CommentController
         if(is_null($auth->getUsuario())){
             echo json_encode([
                 'success' => false,
-                'errores' => 'Necesitas estar logeado.'
+                'errors' => 'Necesitas estar logeado.'
             ]);
             die();
         }
@@ -35,7 +42,7 @@ class CommentController
         if(!$validation->passes()) {
             echo json_encode([
                 'success' => false,
-                'errores' => $validation->getErrores()
+                'errors_validation' => $validation->getErrores()
             ]);
             die();
         }
@@ -52,7 +59,7 @@ class CommentController
                 $comment->create($postData['content'], $postData['post_id'], $auth->getUsuario()->getId());
                 echo json_encode([
                     'success' => true,
-                    'errores' => 'Comentario creado con éxito'
+                    'message' => 'Comentario creado con éxito'
                 ]);
                 die();
 
@@ -69,11 +76,18 @@ class CommentController
         } catch(Exception $e) {
             echo json_encode([
                 'success' => false,
-                'errores' => $e->getMessage()
+                'errors' => $e->getMessage()
             ]);
             die();
         }
     }
+
+     /**
+      * 
+     * Administra la logica para la eliminacion de un comentario
+     * 
+     * @return bool
+     */
 
     public function delete(){
         $id = Route::getUrlParameters()['id'];
@@ -83,7 +97,7 @@ class CommentController
         if(is_null($auth->getUsuario())){
             echo json_encode([
                 'success' => false,
-                'errores' => 'Necesitas estar logeado.'
+                'errors' => 'Necesitas estar logeado.'
             ]);
             die();
         }
@@ -94,19 +108,24 @@ class CommentController
             $deleteComment->delete($id, $auth->getUsuario()->getId());
             echo json_encode([
                 'success' => true,
-                'errores' => 'Comentario eliminado con éxito'
+                'message' => 'Comentario eliminado con éxito'
             ]);
             die();
         } catch(Exception $e) {
             echo json_encode([
                 'success' => false,
-                'errores' => $e->getMessage()
+                'errors' => $e->getMessage()
             ]);
             die();
         }
     }
 
-    public function edit(){}
+     /**
+      * 
+     * Administra la logica para buscar y devolver comentarios por su post_id
+     * 
+     * @return Comments|bool
+     */
 
     public function byPost(){
         $id = Route::getUrlParameters()['id'];
@@ -122,7 +141,7 @@ class CommentController
         } catch(Exception $e) {
             echo json_encode([
                 'success' => false,
-                'errores' => $e->getMessage()
+                'errors' => $e->getMessage()
             ]);
             die();
         }

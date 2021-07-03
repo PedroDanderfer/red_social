@@ -72,6 +72,13 @@ class User extends Modelo implements JsonSerializable
         return null;
     }
 
+    /**
+     * Crea un usuario con un campo y un valor a indicar repetidos
+     * @param  String $valor 
+     * @param  String $campo 
+     * @return bool|Exception
+     */
+
     public function buscarValorUnico($valor, $campo)
     {
         $db = DBConnection::getConnection();
@@ -90,13 +97,73 @@ class User extends Modelo implements JsonSerializable
         return true;
     }
 
-    public function editPsswd(string $password){
-        echo 'editPsswd';
+    /**
+     * Edito la biografia de un usuario
+     * @param  String $content 
+     * @param  String $id
+     * @return bool|Exception
+     */
+
+    public function editBiography(string $content, string $id){
+
+            if(!$content){
+                $content = null;
+            }
+
+            $queryUpdate = "UPDATE users SET biography=? WHERE id=?";
+    
+            $db = DBConnection::getConnection();
+            $stmt = $db->prepare($queryUpdate);
+            $exito = $stmt->execute([$content, $id]);
+    
+            if(!$exito) {
+                throw new Exception('No se pudo editar la biografia');
+            }
+
+            return true;
     }
 
-    public function editUser(string $password){
-        echo 'editUser';
+    /**
+     * Edita el nombre de usuario
+     * @param  String $user 
+     * @param  String $id
+     * @return bool|Exception
+     */
+
+    public function editUser(string $user, string $id){
+        $db = DBConnection::getConnection();
+
+        $query = "SELECT * FROM users WHERE user=?";
+
+        $stmt = $db->prepare($query);
+
+        $stmt->execute([$user]);
+
+        $dato = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(!$dato){
+
+            $queryUpdate = "UPDATE users SET user=? WHERE id=?";
+    
+            $db = DBConnection::getConnection();
+            $stmt = $db->prepare($queryUpdate);
+            $exito = $stmt->execute([$user, $id]);
+    
+            if(!$exito) {
+                throw new Exception('No se pudo editar el usuario');
+            }
+
+            return true;
+        }else{
+            throw new Exception('El nombre de usuario ya esta en uso');
+        }
     }
+
+    /**
+     * Registra un usuario en la base de datos
+     * @param  array $data 
+     * @return bool|Exception
+     */
 
     public function registrar(array $data)
     {

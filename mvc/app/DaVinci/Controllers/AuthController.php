@@ -9,20 +9,27 @@ use DaVinci\Validation\Validator;
 
 class AuthController
 {
+
+     /**
+      * 
+     * Administra la logica para el logeo del usuario
+     * 
+     * @return User|bool
+     */
     public function login()
     {
         $jsonData = file_get_contents('php://input');
         $postData = json_decode($jsonData, true);
 
         $validation = new Validator($postData, [
-            'email' => ['required','email'],
-            'password' => ['required', 'min:8'],
+            'email' => ['required', 'email', "max:255"],
+            'password' => ['required', 'min:8', "max:20"],
         ]);
 
         if(!$validation->passes()) {
             echo json_encode([
                 'success' => false,
-                'errores' => $validation->getErrores()
+                'errors_validation' => $validation->getErrores()
             ]);
             die();
         }
@@ -31,7 +38,7 @@ class AuthController
         if(!$auth->login($postData['email'], $postData['password'])) {
             echo json_encode([
                 'success' => false,
-                'errores' => 'Las credenciales no son validas.'
+                'errors' => 'Las credenciales no son validas.'
             ]);
             die();
         }
@@ -45,15 +52,28 @@ class AuthController
         die();
     }
 
+     /**
+      * 
+     * Administra la logica para el logout
+     *  
+     * @return bool
+     */
     public function logout()
     {
         (new AuthToken())->logout();
         echo json_encode([
             'success' => true,
-            'errores' =>'Sesión cerrada con éxito.'
+            'message' =>'Sesión cerrada con éxito.'
         ]);
         die();
     }
+
+     /**
+      * 
+     * Administra la logica para la autentificacion del usuario
+     * 
+     * @return User|bool
+     */
 
     public function getAuth(){
 
@@ -62,7 +82,7 @@ class AuthController
         if(is_null($auth->getUsuario())){
             echo json_encode([
                 'success' => false,
-                'errores' =>'Debes iniciar sesion'
+                'errors' =>'Debes iniciar sesion'
             ]);
             die();
         }else{

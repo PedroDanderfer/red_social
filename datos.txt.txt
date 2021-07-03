@@ -1,0 +1,5 @@
+Nombre y apellido:Danderfer Pedro
+DNI: 42.225.826
+Carrera: Diseño web turno mañana 5to cuatrimestre
+Docente: Santiago Gallino
+Caracter: 2do Parcial
