@@ -1,3 +1,3 @@
-const URL = 'http://localhost/danderfer-pedro/mvc/public/'
+const URL = 'http://localhost/red_social-main/mvc/public/'
 
 export { URL }
