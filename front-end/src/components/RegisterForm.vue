@@ -127,23 +127,23 @@
                         }else{
                             if(res.errors_validation.user !== undefined){
                                 this.errors.user.status = 'error';
-                                this.errors.user.messages = res.errors.user;
+                                this.errors.user.messages = res.errors_validation.user;
                             }
                             if(res.errors_validation.name !== undefined){
                                 this.errors.name.status = 'error';
-                                this.errors.name.messages = res.errors.name;
+                                this.errors.name.messages = res.errors_validation.name;
                             }
                             if(res.errors_validation.surname !== undefined){
                                 this.errors.surname.status = 'error';
-                                this.errors.surname.messages = res.errors.surname;
+                                this.errors.surname.messages = res.errors_validation.surname;
                             }
                             if(res.errors_validation.email !== undefined){
                                 this.errors.email.status = 'error';
-                                this.errors.email.messages = res.errors.email;
+                                this.errors.email.messages = res.errors_validation.email;
                             }
                             if(res.errors_validation.password !== undefined){
                                 this.errors.password.status = 'error';
-                                this.errors.password.messages = res.errors.password;
+                                this.errors.password.messages = res.errors_validation.password;
                             }
                             if(res.errors_validation.confirm_password !== undefined){
                                 this.errors.confirm_password.status = 'error';
