@@ -32,7 +32,7 @@ const authService = {
                 }else{
                     return  {
                         success: false,
-                        errors: res.errors
+                        errors_validation: res.errors_validation
                     }
                 }
             });
